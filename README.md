@@ -14,3 +14,15 @@ $ pip install requests
 $ pip install bs4
 
 $ cd /sdcard && git clone https://github.com/sptty-chan/zefbot
+# penggunaan
+$ cd /sdcard/zefbot
+
+$ python zefbot.py
+
+$ buka file image.png yang ada didalam folder zefbot lalu buka untuk melihat gambarnya
+
+$ masukkan kode yang anda lihat pada gambar
+
+$ masukkan url video tiktok
+
+$ tekan enter dan tunggu
