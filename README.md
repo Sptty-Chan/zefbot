@@ -13,9 +13,9 @@ $ pip install requests
 
 $ pip install bs4
 
-$ cd /sdcard && git clone https://github.com/sptty-chan/zefbot
+$ git clone https://github.com/sptty-chan/zefbot
 # penggunaan
-$ cd /sdcard/zefbot
+$ cd zefbot
 
 $ python zefbot.py
 
