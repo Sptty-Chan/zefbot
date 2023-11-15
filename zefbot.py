@@ -1,5 +1,5 @@
 import requests, re, shutil, os, time
-from base64 import b64decode
+from base64 import b64decode, b64encode
 from urllib.parse import unquote
 from bs4 import BeautifulSoup as parser
 
@@ -23,14 +23,21 @@ class App:
             "Host": "zefoy.com",
         }
 
+    def getText(self) -> str:
+        url = "https://app.easyscreenocr.com/api/ocr/GetBaiduOcrTextNew"
+        img = b64encode(open("image.png", "rb").read()).decode()
+        data = '{"imageBase64":"data:image/png;base64,' + img + '","languageIndex":"ENG"}'
+        r = requests.post(url, data=str(data)).json()
+        output = r["data"]["text"]
+        return output
+
     def create_session(self):
         modheaders = self.baseheaders
         modheaders["Sec-Fetch-Dest"] = "image"
         modheaders["Sec-Fetch-Mode"] = "no-cors"
         modheaders["Accept"] = "image/avif,image/webp,*/*"
         print(self.banner)
-        print("[∆] Periksa gambar image.png dan masukkan kata yang anda lihat")
-        print("[∆] ketik R/r untuk merefresh kode")
+        print("[∆] Sedang mem-bypass captcha, tunggu sebentar ...")
         while True:
             self.session = requests.Session()
             try:
@@ -57,39 +64,33 @@ class App:
                 saveimage.raw.decode_content = True
                 shutil.copyfileobj(saveimage.raw, wr)
                 wr.close()
-            code = input("[∆] Kode: ")
-            if code not in list("Rr"):
-                captchapayload[captchapayload["captcha"]] = code
-                del captchapayload["captcha"]
-                try:
-                    postcapt = self.session.post(
-                        self.baseurl,
-                        headers=self.baseheaders,
-                        cookies=self.session.cookies,
-                        data=captchapayload,
-                    ).text
-                    self.nexturl = (
-                        self.baseurl
-                        + "/"
-                        + parser(postcapt, "html.parser")
-                        .find("div", {"class": "t-views-menu"})
-                        .find("form")["action"]
-                    )
-                    self.gpayload = {
-                        parser(postcapt, "html.parser").find(
-                            "input", {"type": "search"}
-                        )["name"]: ""
-                    }
-                    break
-                except requests.exceptions.ConnectionError:
-                    exit("[∆] Koneksi internet anda terputus")
-                except AttributeError:
-                    print("[∆] Kode salah")
-                    print("[∆] Gambar pada file image.png telah diganti")
-                    print("[∆] Periksa kembali file image.png & coba lagi")
-            else:
-                print("[∆] Gambar pada file image.png telah diganti")
-                print("[∆] Periksa kembali file image.png & coba lagi")
+            code = self.getText()
+            captchapayload[captchapayload["captcha"]] = code
+            del captchapayload["captcha"]
+            try:
+                postcapt = self.session.post(
+                    self.baseurl,
+                    headers=self.baseheaders,
+                    cookies=self.session.cookies,
+                    data=captchapayload,
+                ).text
+                self.nexturl = (
+                    self.baseurl
+                    + "/"
+                    + parser(postcapt, "html.parser")
+                    .find("div", {"class": "t-views-menu"})
+                    .find("form")["action"]
+                )
+                self.gpayload = {
+                    parser(postcapt, "html.parser").find(
+                        "input", {"type": "search"}
+                    )["name"]: ""
+                }
+                break
+            except requests.exceptions.ConnectionError:
+                exit("[∆] Koneksi internet anda terputus")
+            except AttributeError:
+                continue
 
     def postone(self):
         modheaders = self.baseheaders
@@ -125,7 +126,7 @@ class App:
     def submit(self, modheaders, vturl):
         print("\n[==================================================]\n")
         print(
-            "[∆] Jika gagal 3 kali berturut turut, aktifkan & matikan mode pesawat 5 detik"
+            "[∆] Percobaan pertama biasanya gagal, tapi akan berhasil setelahnya"
         )
         print("[∆] Tekan ctrl + z jika ingin berhenti")
         print("\n[==================================================]\n")
