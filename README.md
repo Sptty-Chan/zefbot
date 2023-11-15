@@ -19,9 +19,7 @@ $ cd /sdcard/zefbot
 
 $ python zefbot.py
 
-$ buka file image.png yang ada didalam folder zefbot lalu buka untuk melihat gambarnya
-
-$ masukkan kode yang anda lihat pada gambar
+$ tunggu bypass captcha sampai selesai
 
 $ masukkan url video tiktok
 
